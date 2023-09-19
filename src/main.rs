@@ -24,6 +24,11 @@ async fn main() -> std::io::Result<()> {
         counter: Mutex::new(0),
     });
 
+    let port = std::env::var("PORT")
+        .unwrap_or_else(|_| "3000".to_string())
+        .parse()
+        .expect("PORT must be a number");
+
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(AppState {
@@ -36,7 +41,7 @@ async fn main() -> std::io::Result<()> {
             .route("/hey", web::get().to(manual_hello))
             .route("/mut_state_test", web::get().to(mut_state_test))
     })
-        .bind(("localhost", 8080))?
+        .bind(("0.0.0.0", port))?
         .run()
         .await
 }
